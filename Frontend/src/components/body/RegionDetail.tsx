@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { REGIONS, type RegionId, type BodyView } from "@/lib/anatomy/muscleRegistry";
 import { getMusclePathsForRegion, computeRegionViewBox } from "@/lib/anatomy/muscleIllustrations";
 import { selectionEngine, useSelection } from "@/store/selectionEngine";
-import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 export function RegionDetail({ region }: { region: RegionId }) {
@@ -19,27 +18,32 @@ export function RegionDetail({ region }: { region: RegionId }) {
   const selectedMuscle = useSelection((s) => s.muscle);
   const viewBox = useMemo(() => computeRegionViewBox(muscles.map((m) => m.path), currentView), [muscles, currentView]);
 
-  return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center p-8" data-region={region}>
-      <div className="absolute left-4 top-4 z-10">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            selectionEngine.clear();
-            router.push("/body");
-          }}
-          className="gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          All Regions
-        </Button>
-      </div>
+  const unique = Array.from(new Map(muscles.map((m) => [m.id, m])).values());
 
+  return (
+    <div className="relative flex h-full w-full flex-col items-center justify-center p-6" data-region={region}>
+      {/* Back button */}
+      <motion.button
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="absolute left-6 top-6 z-10 flex items-center gap-2 rounded-full bg-[var(--glass-bg)] px-4 py-2 text-sm text-muted-foreground backdrop-blur-xl transition hover:text-[var(--ink)]"
+        style={{ boxShadow: "var(--glass-shadow), 0 0 0 1px var(--glass-border)" }}
+        onClick={() => { selectionEngine.clear(); router.push("/body"); }}
+      >
+        <ArrowLeft className="size-4" />
+        All Regions
+      </motion.button>
+
+      {/* View toggle */}
       {views.length > 1 && (
-        <div className="absolute right-4 top-4 z-10">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute right-6 top-6 z-10"
+        >
           <div
-            className="flex rounded-full border border-[var(--brand)]/30 bg-[var(--brand-soft)] p-1"
+            className="relative flex rounded-full bg-[var(--glass-bg)] p-1 backdrop-blur-xl"
+            style={{ boxShadow: "var(--glass-shadow), 0 0 0 1px var(--glass-border)" }}
             role="tablist"
             aria-label="Body view"
           >
@@ -49,109 +53,148 @@ export function RegionDetail({ region }: { region: RegionId }) {
                 role="tab"
                 aria-selected={viewIndex === i}
                 onClick={() => setViewIndex(i)}
-                className={`relative rounded-full px-4 py-1.5 text-sm font-medium capitalize transition-colors ${
-                  viewIndex === i ? "text-[var(--brand-foreground)]" : "text-[var(--ink)]/60"
+                className={`relative rounded-full px-5 py-1.5 text-sm font-medium capitalize transition-colors ${
+                  viewIndex === i ? "text-[var(--brand-foreground)]" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {viewIndex === i && (
                   <motion.span
                     layoutId="region-view-pill"
                     className="absolute inset-0 rounded-full bg-[var(--brand)]"
-                    transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                    style={{ boxShadow: "var(--brand-glow)" }}
+                    transition={{ type: "spring", stiffness: 500, damping: 34 }}
                   />
                 )}
                 <span className="relative z-10">{v}</span>
               </button>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
-      <div className="w-full max-w-lg text-center">
-        <h2 className="mb-1 text-2xl font-semibold text-[var(--ink)]">
-          {REGIONS[region].label}
-        </h2>
-        <p className="mb-6 text-sm text-muted-foreground">{REGIONS[region].hint}</p>
+      {/* Content */}
+      <div className="flex w-full max-w-4xl flex-col items-center gap-8 lg:flex-row lg:items-start">
+        {/* SVG */}
+        <div className="flex flex-1 flex-col items-center">
+          <motion.h2
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold text-[var(--ink)] drop-shadow-[0_0_12px_var(--region-color)_at_50%_0]"
+          >
+            {REGIONS[region].label}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.05 }}
+            className="mb-4 text-sm text-muted-foreground/60"
+          >
+            {REGIONS[region].hint}
+          </motion.p>
 
-        <div className="relative mx-auto flex items-center justify-center rounded-2xl border border-border bg-gradient-to-b from-white to-[var(--brand-soft)]/40 p-6">
-          <AnimatePresence mode="wait">
-            <motion.svg
-              key={currentView}
-              viewBox={viewBox}
-              className="h-[50vh] w-full max-w-md"
-              role="group"
-              aria-label={`${REGIONS[region].label} muscles, ${currentView} view`}
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {muscles.map((muscle) => {
-                const isActive = selectedMuscle === muscle.id;
-                return (
-                  <g
-                    key={`${muscle.id}-${muscle.path.slice(0, 20)}`}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`${muscle.label} — click to select`}
-                    aria-pressed={isActive}
-                    className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
-                    onClick={() => {
-                      selectionEngine.selectMuscle(muscle.id, "click");
-                      router.push(`/body/${region}/${muscle.id}`);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        selectionEngine.selectMuscle(muscle.id, "keyboard");
+          <motion.div
+            layout
+            className="relative flex w-full items-center justify-center overflow-hidden rounded-3xl bg-[var(--glass-bg)] p-6 backdrop-blur-xl"
+            style={{ boxShadow: "var(--glass-shadow), 0 0 0 1px var(--glass-border), inset 0 0 60px var(--region-soft)" }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.svg
+                key={currentView}
+                viewBox={viewBox}
+                className="h-[45vh] w-full max-w-sm drop-shadow-[0_0_20px_var(--region-color)_at_50%_50%]"
+                role="group"
+                aria-label={`${REGIONS[region].label} muscles, ${currentView} view`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {muscles.map((muscle) => {
+                  const isActive = selectedMuscle === muscle.id;
+                  return (
+                    <g
+                      key={`${muscle.id}-${muscle.path.slice(0, 20)}`}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${muscle.label} — click to select`}
+                      aria-pressed={isActive}
+                      className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+                      onClick={() => {
+                        selectionEngine.selectMuscle(muscle.id, "click");
                         router.push(`/body/${region}/${muscle.id}`);
-                      }
-                    }}
-                  >
-                    <path
-                      d={muscle.path}
-                      fill={isActive ? "var(--region-color)" : "var(--region-soft)"}
-                      fillOpacity={isActive ? 0.85 : 0.5}
-                      stroke="var(--region-color)"
-                      strokeWidth={isActive ? 0.5 : 0.3}
-                      strokeOpacity={isActive ? 1 : 0.6}
-                      style={{
-                        transition:
-                          "fill 200ms ease, fill-opacity 200ms ease, stroke-width 200ms ease",
                       }}
-                    />
-                  </g>
-                );
-              })}
-            </motion.svg>
-          </AnimatePresence>
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          selectionEngine.selectMuscle(muscle.id, "keyboard");
+                          router.push(`/body/${region}/${muscle.id}`);
+                        }
+                      }}
+                    >
+                      <path
+                        d={muscle.path}
+                        fill={isActive ? "var(--region-color)" : "var(--region-soft)"}
+                        fillOpacity={isActive ? 0.6 : 0.3}
+                        stroke="var(--region-color)"
+                        strokeWidth={isActive ? 0.6 : 0.3}
+                        strokeOpacity={isActive ? 0.9 : 0.4}
+                        style={{
+                          transition:
+                            "fill 250ms cubic-bezier(0.22,1,0.36,1), fill-opacity 250ms ease, stroke-width 250ms ease",
+                        }}
+                      />
+                    </g>
+                  );
+                })}
+              </motion.svg>
+            </AnimatePresence>
+          </motion.div>
         </div>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
-          {Array.from(
-            new Map(muscles.map((m) => [m.id, m])).values()
-          ).map((muscle) => {
+        {/* Muscle buttons */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex w-full flex-col gap-2 lg:w-auto lg:min-w-[200px]"
+        >
+          <h3 className="px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/50">
+            Muscles in this region
+          </h3>
+          {unique.map((muscle, i) => {
             const isActive = selectedMuscle === muscle.id;
             return (
-              <Button
+              <motion.button
                 key={muscle.id}
-                variant="outline"
-                size="sm"
-                className={`gap-2 transition-colors ${
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + i * 0.04 }}
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.97 }}
+                data-region={region}
+                className={`group relative overflow-hidden rounded-xl border px-4 py-2.5 text-left text-sm font-medium transition-all ${
                   isActive
-                    ? "border-[var(--region-color)] bg-[var(--region-color)] text-white"
-                    : "border-[var(--region-color)]/30 hover:bg-[var(--region-soft)] hover:text-[var(--ink)]"
+                    ? "border-[var(--region-color)] bg-[var(--region-soft)] text-[var(--ink)]"
+                    : "border-[var(--glass-border)] bg-[var(--glass-bg)] text-muted-foreground backdrop-blur-xl hover:border-[var(--region-color)]/50 hover:text-[var(--ink)]"
                 }`}
+                style={isActive ? { boxShadow: "var(--region-glow, 0 0 12px oklch(0.72 0.18 55 / 0.2))" } : {}}
                 onClick={() => {
                   selectionEngine.selectMuscle(muscle.id, "click");
                   router.push(`/body/${region}/${muscle.id}`);
                 }}
               >
                 {muscle.label}
-              </Button>
+                {isActive && (
+                  <motion.div
+                    layoutId="muscle-dot"
+                    className="absolute right-3 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[var(--region-color)]"
+                    style={{ boxShadow: "0 0 6px var(--region-color)" }}
+                  />
+                )}
+              </motion.button>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

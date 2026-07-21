@@ -17,20 +17,41 @@ export function BodyIllustration({ view, activeRegion, onHover, onSelect }: Prop
   return (
     <svg
       viewBox={viewBox}
-      className="h-full w-full max-h-[70vh]"
+      className="h-full w-full max-h-[75vh]"
       role="group"
       aria-label={`Human body, ${view} view`}
     >
-      {/* Static non-interactive muscles (head, neck, hands, feet) */}
+      <defs>
+        <radialGradient id="body-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="oklch(0.88 0.22 120 / 0.08)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="0.8" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      <ellipse
+        cx={view === "front" ? 17.5 : 54.5}
+        cy={46}
+        rx={13}
+        ry={34}
+        fill="url(#body-glow)"
+        className="animate-[breathe_4s_ease-in-out_infinite]"
+      />
+
       {statics.length > 0 && (
-        <g fill="var(--brand-soft)" stroke="var(--brand)" strokeWidth={0.3} strokeOpacity={0.25}>
+        <g fill="oklch(0.15 0.01 260 / 0.25)" stroke="oklch(1 0 0 / 4%)" strokeWidth={0.2}>
           {statics.map((m) => (
             <path key={m.id} d={m.path} />
           ))}
         </g>
       )}
 
-      {/* Interactive region groups */}
       {regions.map((region) => (
         <RegionGroup
           key={region.regionId}
@@ -78,14 +99,14 @@ function RegionGroup({
         <path
           key={`${region.regionId}-${i}`}
           d={path}
-          fill={isActive ? "var(--region-color)" : "transparent"}
+          fill="var(--region-color)"
+          fillOpacity={isActive ? 0.35 : 0}
           stroke="var(--region-color)"
-          strokeWidth={isActive ? 0.5 : 0.3}
-          strokeOpacity={isActive ? 1 : 0.45}
-          style={{
-            transition:
-              "fill 220ms cubic-bezier(0.22,1,0.36,1), stroke-opacity 220ms ease",
-          }}
+          strokeWidth={isActive ? 0.6 : 0.2}
+          strokeOpacity={isActive ? 0.9 : 0.2}
+          filter={isActive ? "url(#neon-glow)" : undefined}
+          className="transition-all duration-[400ms] ease-out hover:fill-opacity-40 hover:stroke-opacity-100 hover:[filter:url(#neon-glow)]"
+          style={{ transition: "fill-opacity 400ms ease, stroke-width 400ms ease, stroke-opacity 400ms ease" }}
         />
       ))}
     </g>
