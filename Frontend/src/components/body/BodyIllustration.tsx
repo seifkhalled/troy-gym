@@ -23,7 +23,7 @@ export function BodyIllustration({ view, activeRegion, onHover, onSelect }: Prop
     >
       <defs>
         <radialGradient id="body-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="oklch(0.88 0.22 120 / 0.08)" />
+          <stop offset="0%" stopColor="oklch(0.72 0.18 200 / 0.08)" />
           <stop offset="100%" stopColor="transparent" />
         </radialGradient>
         <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">

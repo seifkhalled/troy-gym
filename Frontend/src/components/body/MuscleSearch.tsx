@@ -47,7 +47,7 @@ export function MuscleSearch() {
           onFocus={() => setOpen(true)}
           placeholder="Search muscle or region..."
           aria-label="Search muscles"
-          className="w-full rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] py-2.5 pl-10 pr-9 text-sm text-[var(--ink)] outline-none backdrop-blur-xl placeholder:text-muted-foreground/40 transition focus:border-[var(--brand)]/50"
+          className="w-full rounded-2xl border border-border bg-card/40 py-2.5 pl-10 pr-9 text-sm text-foreground outline-none backdrop-blur-xl placeholder:text-muted-foreground/40 transition focus:border-primary/50"
           style={{ boxShadow: "var(--glass-shadow)" }}
         />
         {q && (
@@ -65,7 +65,7 @@ export function MuscleSearch() {
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
-            className="absolute z-30 mt-2 w-full overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-2xl"
+            className="absolute z-30 mt-2 w-full overflow-hidden rounded-2xl border border-border bg-card/80 backdrop-blur-2xl"
             style={{ boxShadow: "var(--glass-shadow)" }}
           >
             {results.map((m, i) => (
@@ -77,7 +77,7 @@ export function MuscleSearch() {
               >
                 <button
                   onClick={() => choose(m.id, m.region)}
-                  className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition hover:bg-[var(--brand-soft)]"
+                  className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition hover:bg-primary/10"
                 >
                   <span className="font-medium text-[var(--ink)]">{m.label}</span>
                   <span className="text-xs text-muted-foreground/60" data-region={m.region}>

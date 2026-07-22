@@ -15,8 +15,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "TROY GYM — Interactive Anatomy & Coaching",
-  description: "Explore muscles by region, see exercises and stretches, and get AI coaching.",
+  title: "ACHILLES — Interactive Anatomy & AI Coaching",
+  description: "Unleash your inner warrior. Explore human anatomy, discover exercises, and train with AI-powered coaching.",
 };
 
 export default function RootLayout({

@@ -129,7 +129,7 @@ export function ExerciseMedia({ exercise }: { exercise: string }) {
                   onClick={() => setLightboxIndex(i)}
                   className={`shrink-0 w-24 aspect-video rounded-lg overflow-hidden border-2 transition-all ${
                     i === lightboxIndex
-                      ? "border-[var(--lime)] opacity-100"
+                      ? "border-primary opacity-100"
                       : "border-transparent opacity-50 hover:opacity-80"
                   }`}
                 >

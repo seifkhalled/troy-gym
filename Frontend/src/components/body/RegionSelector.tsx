@@ -77,10 +77,10 @@ export function RegionSelector() {
   return (
     <div className="flex h-full flex-col">
       <div className="px-5 pt-5 pb-2">
-        <h1 className="text-xl font-bold tracking-tight text-[var(--ink)]" style={{ fontFamily: "var(--font-heading)" }}>
-          TROY GYM
+        <h1 className="text-xl font-bold tracking-tighter text-primary" style={{ fontFamily: "var(--font-heading)" }}>
+          ACHILLES
         </h1>
-        <p className="text-xs text-muted-foreground/60 mt-0.5">Interactive Anatomy</p>
+        <p className="text-xs text-muted-foreground/60 mt-0.5">Interactive Anatomy & AI Coaching</p>
       </div>
 
       <div className="px-5 pb-3">
@@ -123,14 +123,14 @@ export function RegionSelector() {
                     view === v ? "text-black" : "text-white/50 hover:text-white/80"
                   }`}
                 >
-                  {view === v && (
-                    <motion.span
-                      layoutId="view-pill"
-                      className="absolute inset-0 rounded-full bg-[var(--lime)]"
-                      style={{ boxShadow: "var(--lime-glow)" }}
-                      transition={{ type: "spring", stiffness: 500, damping: 34 }}
-                    />
-                  )}
+                      {view === v && (
+                      <motion.span
+                        layoutId="view-pill"
+                        className="absolute inset-0 rounded-full bg-primary"
+                        style={{ boxShadow: "0 0 10px oklch(0.72 0.18 200 / 0.3)" }}
+                        transition={{ type: "spring", stiffness: 500, damping: 34 }}
+                      />
+                    )}
                   <span className="relative z-10">{v}</span>
                 </button>
               ))}
