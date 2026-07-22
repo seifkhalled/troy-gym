@@ -127,7 +127,7 @@ export function RegionSelector() {
                       <motion.span
                         layoutId="view-pill"
                         className="absolute inset-0 rounded-full bg-primary"
-                        style={{ boxShadow: "0 0 10px oklch(0.72 0.18 200 / 0.3)" }}
+                        style={{ boxShadow: "0 0 10px oklch(0.78 0.12 286 / 0.3)" }}
                         transition={{ type: "spring", stiffness: 500, damping: 34 }}
                       />
                     )}

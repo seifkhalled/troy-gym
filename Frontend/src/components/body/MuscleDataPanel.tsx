@@ -25,7 +25,7 @@ const fadeUp = (i: number): Variants => ({
   },
 });
 
-const tabActiveClass = "border-b-2 border-primary text-primary";
+const tabActiveClass = "border-b-2 border-electric-cyan text-electric-cyan";
 const tabInactiveClass = "text-muted-foreground hover:text-foreground transition-colors";
 
 export function MuscleDataPanel() {

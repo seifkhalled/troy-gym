@@ -52,7 +52,7 @@ export function SidebarNav() {
 
       {/* CTA */}
       <div className="px-6 mb-6">
-        <button className="w-full py-3 px-4 bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-widest rounded-lg hover:opacity-90 transition-all active:scale-95" style={{ boxShadow: "0 0 15px oklch(0.72 0.18 200 / 0.2)" }}>
+        <button className="w-full py-3 px-4 bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-widest rounded-lg hover:opacity-90 transition-all active:scale-95" style={{ boxShadow: "0 0 15px oklch(0.78 0.12 286 / 0.2)" }}>
           Start Workout
         </button>
       </div>

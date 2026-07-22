@@ -177,7 +177,7 @@ export function RegionDetail({ region }: { region: RegionId }) {
                     ? "border-[var(--region-color)] bg-[var(--region-soft)] text-[var(--ink)]"
                     : "border-[var(--glass-border)] bg-[var(--glass-bg)] text-muted-foreground backdrop-blur-xl hover:border-[var(--region-color)]/50 hover:text-[var(--ink)]"
                 }`}
-                style={isActive ? { boxShadow: "var(--region-glow, 0 0 12px oklch(0.72 0.18 55 / 0.2))" } : {}}
+                style={isActive ? { boxShadow: "var(--region-glow, 0 0 12px oklch(0.78 0.12 286 / 0.2))" } : {}}
                 onClick={() => {
                   selectionEngine.selectMuscle(muscle.id, "click");
                   router.push(`/body/${region}/${muscle.id}`);

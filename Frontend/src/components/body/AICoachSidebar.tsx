@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "motion/react";
 import { useSelection } from "@/store/selectionEngine";
 import { MUSCLES } from "@/lib/anatomy/muscleRegistry";
-import { Send, Bot, User } from "lucide-react";
+import { Send, Bot, User, Loader2 } from "lucide-react";
 
 interface Message {
   role: "ai" | "user";
@@ -24,20 +24,44 @@ export function AICoachSidebar() {
     ];
   });
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    setMessages((prev) => [...prev, { role: "user", text: input.trim() }]);
+  const handleSend = async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+    setMessages((prev) => [...prev, { role: "user", text }]);
     setInput("");
-    setTimeout(() => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          muscle: entry
+            ? {
+                label: entry.label,
+                region: entry.region,
+                primaryFunctions: entry.aiContext.primaryFunctions,
+                commonIssues: entry.aiContext.commonIssues,
+                recoveryTime: entry.recoveryTime,
+                weeklyVolume: entry.weeklyVolume,
+              }
+            : null,
+        }),
+      });
+      const data = await res.json();
+      setMessages((prev) => [...prev, { role: "ai", text: data.reply }]);
+    } catch {
       setMessages((prev) => [
         ...prev,
-        {
-          role: "ai",
-          text: `Great question about the ${entry?.label ?? "target muscle"}. For the most tailored advice, I'd recommend focusing on controlled eccentrics and proper warm-up protocols. Would you like specific exercise recommendations or form tips?`,
-        },
+        { role: "ai", text: "I'm sorry, I'm having trouble connecting right now. Please try again." },
       ]);
-    }, 800);
+    } finally {
+      setLoading(false);
+      inputRef.current?.focus();
+    }
   };
 
   return (
@@ -95,18 +119,21 @@ export function AICoachSidebar() {
       <div className="p-4 border-t border-border bg-black/20">
         <div className="relative">
           <input
+            ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
+            onKeyDown={(e) => { if (e.key === "Enter" && !loading) handleSend(); }}
             placeholder="Ask about training, recovery..."
+            disabled={loading}
             className="w-full bg-card border border-border text-sm text-foreground px-4 py-3 rounded-xl focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground/50 pr-10"
           />
-          <button
+            <button
             onClick={handleSend}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-primary hover:text-foreground transition-colors p-1"
+            disabled={loading}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-primary hover:text-foreground transition-colors p-1 disabled:opacity-50"
           >
-            <Send className="size-4" />
+            {loading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
           </button>
         </div>
       </div>
